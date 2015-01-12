@@ -20,7 +20,7 @@ func NewSubnetAllocator(network string, capacity int, amap map[string]bool) (*Su
 	netMaskSize, _ := netIP.Mask.Size()
 	fmt.Println(netMaskSize)
 	if capacity > (32 - netMaskSize) {
-		return nil, fmt.Errorf("hosts bits cannot be larger than available bits")
+		return nil, fmt.Errorf("Subnet capacity cannot be larger than number of networks available")
 	}
 
 	if amap == nil {
