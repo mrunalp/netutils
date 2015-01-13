@@ -11,7 +11,7 @@ type SubnetAllocator struct {
 	allocMap map[string]bool
 }
 
-func NewSubnetAllocator(network string, capacity uint, amap map[string]bool) (*SubnetAllocator, error) {
+func NewSubnetAllocator(network string, capacity uint, inUse []string) (*SubnetAllocator, error) {
 	_, netIP, err := net.ParseCIDR(network)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to parse network address: %q", network)
@@ -23,8 +23,18 @@ func NewSubnetAllocator(network string, capacity uint, amap map[string]bool) (*S
 		return nil, fmt.Errorf("Subnet capacity cannot be larger than number of networks available")
 	}
 
-	if amap == nil {
-		amap = make(map[string]bool)
+	amap := make(map[string]bool)
+	for _, netStr := range inUse {
+		_, nIp, err := net.ParseCIDR(netStr)
+		if err != nil {
+			fmt.Println("Failed to parse network address: ", netStr)
+			continue
+		}
+		if !netIP.Contains(nIp.IP) {
+			fmt.Println("Provided subnet doesn't belong to network: ", nIp)
+			continue
+		}
+		amap[nIp.String()] = true
 	}
 	return &SubnetAllocator{network: netIP, capacity: capacity, allocMap: amap}, nil
 }
