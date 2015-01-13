@@ -39,13 +39,9 @@ func (sna *SubnetAllocator) GetNetwork() (*net.IPNet, error) {
 	numSubnetBits = 32 - uint(netMaskSize) - sna.capacity
 	numSubnets = 1 << numSubnetBits
 
-	//fmt.Println(strconv.FormatUint(uint64(baseipu), 2))
 	var i uint32
 	for i = 0; i < numSubnets; i++ {
 		shifted := i << sna.capacity
-		if shifted == 10 {
-			break
-		}
 		ipu := baseipu | shifted
 		genIp := Uint32ToIP(ipu)
 		genSubnet := &net.IPNet{IP: genIp, Mask: net.CIDRMask(int(numSubnetBits)+netMaskSize, 32)}
