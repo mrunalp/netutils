@@ -63,3 +63,18 @@ func (sna *SubnetAllocator) GetNetwork() (*net.IPNet, error) {
 
 	return nil, fmt.Errorf("No subnets available.")
 }
+
+func (sna *SubnetAllocator) ReleaseNetwork(ipnet *net.IPNet) error {
+	if !sna.network.Contains(ipnet.IP) {
+		return fmt.Errorf("Provided subnet %v doesn't belong to the network %v", ipnet, sna.network)
+	}
+
+	ipnetStr := ipnet.String()
+	if !sna.allocMap[ipnetStr] {
+		return fmt.Errorf("Provided subnet %v is already available", ipnet)
+	}
+
+	sna.allocMap[ipnetStr] = false
+
+	return nil
+}
